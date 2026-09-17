@@ -1,5 +1,5 @@
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "https://backfinanzasp-production.up.railway.app/api";
+  process.env.NEXT_PUBLIC_API_URL ?? "https://backfinanzasp-production.up.railway.app";
 
 export class ApiError extends Error {
   constructor(
