@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   ArrowLeftRight,
   LayoutDashboard,
+  LogOut,
   Settings,
   Wallet,
 } from "lucide-react";
@@ -18,7 +19,7 @@ const NAV = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const email = user?.email ?? "";
   const displayName = user?.name?.trim() || email;
   const initial = (displayName.charAt(0) || "U").toUpperCase();
@@ -86,6 +87,14 @@ export function Sidebar() {
             </Link>
           );
         })}
+        <button
+          type="button"
+          onClick={logout}
+          className="flex flex-col items-center gap-1 rounded-lg px-3 py-1 text-[11px] font-medium text-zinc-500 dark:text-zinc-400"
+        >
+          <LogOut className="size-5" />
+          Salir
+        </button>
       </nav>
     </>
   );

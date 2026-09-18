@@ -56,7 +56,7 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
           <h1 className="text-2xl font-bold tracking-tight">FinanzasP</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {isLogin
-              ? "Inicia sesión para ver tu panel de control"
+              ? "Inicia sesión para ver tu panel de finanzas personales"
               : "Crea tu cuenta para empezar"}
           </p>
         </div>
@@ -171,6 +171,11 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
             </>
           )}
         </p>
+        <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
+            {isLogin
+              ? "Versión Beta 1"
+              : "Versión Beta 1"}
+          </p>
       </div>
     </div>
   );
