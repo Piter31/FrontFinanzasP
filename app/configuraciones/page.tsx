@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react";
 import { Card } from "@/components/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/lib/auth-context";
+import { useShowCharts } from "@/lib/use-show-charts";
 
 const MONEDAS = [
   { code: "USD", label: "US$ Dólar" },
@@ -13,6 +14,7 @@ const MONEDAS = [
 
 export default function ConfiguracionesPage() {
   const { user, logout, setCurrency } = useAuth();
+  const { showCharts, setShowCharts } = useShowCharts();
   const currency = user?.currency ?? "USD";
   const [savingCurrency, setSavingCurrency] = useState(false);
   const [currencyError, setCurrencyError] = useState("");
@@ -52,6 +54,31 @@ export default function ConfiguracionesPage() {
             </p>
           </div>
           <ThemeToggle />
+        </div>
+
+        <div className="flex items-center justify-between gap-4 p-5">
+          <div>
+            <p className="text-sm font-medium">Gráficos</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Mostrar los gráficos del dashboard
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={showCharts}
+            aria-label="Mostrar los gráficos del dashboard"
+            onClick={() => setShowCharts(!showCharts)}
+            className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
+              showCharts ? "bg-emerald-500" : "bg-zinc-200 dark:bg-zinc-700"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 size-6 rounded-full bg-white shadow transition-transform ${
+                showCharts ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
         </div>
 
         <div className="flex items-center justify-between gap-4 p-5">

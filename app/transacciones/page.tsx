@@ -1,25 +1,40 @@
 "use client";
 
-import { Plus, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { Suspense, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Plus, Trash2, TrendingDown, TrendingUp, X } from "lucide-react";
 import { Card } from "@/components/card";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useTransactionModal } from "@/components/transaction-modal";
 import { useTransactions } from "@/lib/transactions-context";
 import { useCurrency } from "@/lib/use-currency";
 import { formatDate } from "@/lib/format";
+import type { Transaction } from "@/lib/types";
 
-export default function TransaccionesPage() {
+function TransaccionesPageInner() {
   const { transactions, loading, deleteTransaction } = useTransactions();
   const { openModal } = useTransactionModal();
   const { format } = useCurrency();
+  const searchParams = useSearchParams();
+  const [pendingDelete, setPendingDelete] = useState<Transaction | null>(null);
 
-  const sorted = [...transactions].sort((a, b) =>
-    a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : 0,
-  );
+  const tipoParam = searchParams.get("tipo");
+  const filtroTipo =
+    tipoParam === "ingreso" || tipoParam === "gasto" ? tipoParam : null;
 
-  const handleDelete = (id: string) => {
-    deleteTransaction(id).catch(() => {
+  const sorted = [...transactions]
+    .filter((t) => (filtroTipo ? t.tipo === filtroTipo : true))
+    .sort((a, b) =>
+      a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : 0,
+    );
+
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    deleteTransaction(pendingDelete.id).catch(() => {
       // los 401 ya redirigen a /login; otros errores se ignoran en la UI
     });
+    setPendingDelete(null);
   };
 
   return (
@@ -30,6 +45,20 @@ export default function TransaccionesPage() {
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
             Historial de todos tus movimientos
           </p>
+          {filtroTipo && (
+            <span className="mt-2 inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+              {filtroTipo === "ingreso"
+                ? "Mostrando solo ingresos"
+                : "Mostrando solo gastos"}
+              <Link
+                href="/transacciones"
+                className="flex items-center gap-1 text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+              >
+                <X className="size-3" />
+                Ver todas
+              </Link>
+            </span>
+          )}
         </div>
         <button
           type="button"
@@ -92,7 +121,7 @@ export default function TransaccionesPage() {
                 </span>
                 <button
                   type="button"
-                  onClick={() => handleDelete(t.id)}
+                  onClick={() => setPendingDelete(t)}
                   aria-label="Eliminar transacción"
                   title="Eliminar"
                   className="grid size-8 shrink-0 place-items-center rounded-lg text-zinc-400 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
@@ -104,6 +133,26 @@ export default function TransaccionesPage() {
           </ul>
         )}
       </Card>
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Eliminar transacción"
+        message={`¿Eliminar "${
+          pendingDelete?.descripcion?.trim() ||
+          pendingDelete?.categoria ||
+          "esta transacción"
+        }"? Esta acción no se puede deshacer.`}
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
+  );
+}
+
+export default function TransaccionesPage() {
+  return (
+    <Suspense fallback={null}>
+      <TransaccionesPageInner />
+    </Suspense>
   );
 }
