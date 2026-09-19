@@ -9,3 +9,11 @@ export interface Transaction {
   fecha: string;
   descripcion?: string;
 }
+
+export interface BudgetStatus {
+  categoria: string;
+  limite: number;
+  gastado: number;
+  porcentaje: number;
+  estado: "ok" | "alerta" | "excedido";
+}
