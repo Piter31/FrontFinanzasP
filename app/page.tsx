@@ -2,6 +2,7 @@
 
 import { LogOut, Plus, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { StatCard } from "@/components/stat-card";
+import { BudgetAlerts } from "@/components/budget-alerts";
 import { BarChart } from "@/components/bar-chart";
 import { DonutChart } from "@/components/donut-chart";
 import { SavingsGoal } from "@/components/savings-goal";
@@ -87,6 +88,8 @@ export default function DashboardPage() {
           </button>
         </div>
       </header>
+
+      <BudgetAlerts />
 
       {loading || !data ? (
         <DashboardSkeleton />
