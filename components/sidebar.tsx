@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
+  Shield,
   Wallet,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
@@ -23,6 +24,10 @@ export function Sidebar() {
   const email = user?.email ?? "";
   const displayName = user?.name?.trim() || email;
   const initial = (displayName.charAt(0) || "U").toUpperCase();
+  const navItems =
+    user?.role === "ADMIN"
+      ? [...NAV, { href: "/admin", label: "Admin", icon: Shield }]
+      : NAV;
 
   return (
     <>
@@ -36,7 +41,7 @@ export function Sidebar() {
         </Link>
 
         <nav className="mt-10 flex flex-col gap-1 px-3">
-          {NAV.map(({ href, label, icon: Icon }) => {
+          {navItems.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
             return (
               <Link
@@ -70,7 +75,7 @@ export function Sidebar() {
 
       {/* Navegación inferior en móvil */}
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-stretch justify-around border-t border-zinc-200 bg-white/95 py-2 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/95 md:hidden">
-        {NAV.map(({ href, label, icon: Icon }) => {
+        {navItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href;
           return (
             <Link
