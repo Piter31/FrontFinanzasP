@@ -6,6 +6,7 @@ import { BudgetAlerts } from "@/components/budget-alerts";
 import { BarChart } from "@/components/bar-chart";
 import { DonutChart } from "@/components/donut-chart";
 import { SavingsGoal } from "@/components/savings-goal";
+import { SuggestionBox } from "@/components/suggestion-box";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useTransactionModal } from "@/components/transaction-modal";
 import { useAuth } from "@/lib/auth-context";
@@ -168,6 +169,8 @@ export default function DashboardPage() {
           )}
 
           <SavingsGoal meta={data.meta} onSave={updateGoal} />
+
+          <SuggestionBox />
         </>
       )}
     </div>
