@@ -416,7 +416,7 @@ export default function AdminPage() {
             </p>
           </div>
           <Link
-            href="/"
+            href="/dashboard"
             className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
           >
             Volver al panel

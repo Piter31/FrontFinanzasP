@@ -35,7 +35,7 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
     try {
       if (isLogin) await login(email.trim(), password);
       else await register(name.trim(), email.trim(), password);
-      router.replace("/");
+      router.replace("/dashboard");
     } catch (err) {
       setError(
         err instanceof ApiError

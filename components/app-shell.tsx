@@ -11,6 +11,7 @@ import { Sidebar } from "@/components/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const AUTH_ROUTES = ["/login", "/registro"];
+const PUBLIC_ROUTES = ["/", ...AUTH_ROUTES];
 
 function Splash() {
   return (
@@ -30,17 +31,27 @@ function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const isAuthRoute = AUTH_ROUTES.includes(pathname);
+  const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
-  // Protección del dashboard: sin sesión → /login; con sesión en /login → /
+  // (b) sin sesión y ruta no pública → /login
+  // (c) con sesión en la landing o en una auth route → /dashboard
   useEffect(() => {
     if (loading) return;
-    if (!user && !isAuthRoute) router.replace("/login");
-    else if (user && isAuthRoute) router.replace("/");
-  }, [user, loading, isAuthRoute, router]);
+    if (!user && !isPublicRoute) router.replace("/login");
+    else if (user && (pathname === "/" || isAuthRoute))
+      router.replace("/dashboard");
+  }, [user, loading, isPublicRoute, isAuthRoute, pathname, router]);
 
+  // (a) cargando → Splash (también cubre los redirects para evitar flashes)
   if (loading) return <Splash />;
-  if (isAuthRoute) return user ? <Splash /> : <>{children}</>;
-  if (!user) return <Splash />;
+  if (!user) {
+    // (d) landing pública y (e) pantallas de auth: sin sidebar ni providers de app
+    if (isPublicRoute) return <>{children}</>;
+    return <Splash />;
+  }
+  if (pathname === "/" || isAuthRoute) return <Splash />;
+
+  // (f) resto de la app con sesión → shell con Sidebar
 
   return (
     <TransactionsProvider>
@@ -50,7 +61,7 @@ function Shell({ children }: { children: React.ReactNode }) {
           <div className="min-w-0 flex-1">
             {/* Barra superior móvil */}
             <header className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-200 bg-zinc-50/90 px-4 py-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90 md:hidden">
-              <Link href="/" className="flex items-center gap-2">
+              <Link href="/dashboard" className="flex items-center gap-2">
                 <span className="grid size-8 place-items-center rounded-xl bg-emerald-500/15 text-emerald-500">
                   <Wallet className="size-4" />
                 </span>
