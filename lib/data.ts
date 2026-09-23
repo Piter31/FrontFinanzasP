@@ -4,6 +4,8 @@ export const CATEGORIAS_GASTO = [
   "Vivienda",
   "Ocio",
   "Salud",
+  "Hormiga",
+  "Bolu-compras",
   "Otros",
 ];
 
