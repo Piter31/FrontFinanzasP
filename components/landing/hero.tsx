@@ -39,9 +39,9 @@ export function Hero() {
               Ver planes
             </CtaButton>
           </div>
-          <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
+          {/* <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
             Gratis para siempre · Sin tarjeta · Listo en 2 minutos
-          </p>
+          </p> */}
         </Reveal>
 
         {/* Mock del dashboard: protagonista visual */}

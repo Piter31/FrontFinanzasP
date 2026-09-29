@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   ArrowLeftRight,
   Check,
+  Gem,
   Lightbulb,
   Loader2,
   MessageSquare,
@@ -19,6 +20,7 @@ import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 
 interface AdminStats {
+  // subscribedUsers: number;
   totalUsers: number;
   activeUsers: number;
   totalTransactions: number;
@@ -212,6 +214,11 @@ function ResumenTab({ token }: { token: string | null }) {
       label: "Sugerencias sin leer",
       value: stats.unreadSuggestions,
       icon: MessageSquare,
+    },
+    {
+      label: "Usuarios suscriptos",
+      value: stats.unreadSuggestions, //cambiar por stats.subscribedUsers cuando se implemente la suscripción
+      icon: Gem,
     },
   ];
 
