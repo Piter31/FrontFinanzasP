@@ -33,10 +33,19 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
     }
     setSubmitting(true);
     try {
-      if (isLogin) await login(email.trim(), password);
-      else await register(name.trim(), email.trim(), password);
-      router.replace("/");
+      if (isLogin) {
+        await login(email.trim(), password);
+        router.replace("/");
+      } else {
+        await register(name.trim(), email.trim(), password);
+        router.push(`/verificar?email=${encodeURIComponent(email.trim())}`);
+      }
     } catch (err) {
+      // 403 en login = cuenta sin verificar: va a la pantalla de verificación.
+      if (isLogin && err instanceof ApiError && err.status === 403) {
+        router.push(`/verificar?email=${encodeURIComponent(email.trim())}`);
+        return;
+      }
       setError(
         err instanceof ApiError
           ? err.message
