@@ -10,7 +10,7 @@ import { TransactionModalProvider } from "@/components/transaction-modal";
 import { Sidebar } from "@/components/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-const AUTH_ROUTES = ["/login", "/registro"];
+const AUTH_ROUTES = ["/login", "/registro", "/verificar"];
 
 function Splash() {
   return (
