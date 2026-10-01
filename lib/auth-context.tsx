@@ -31,6 +31,8 @@ interface AuthContextValue {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
+  verifyEmail: (email: string, code: string) => Promise<void>;
+  resendCode: (email: string) => Promise<void>;
   logout: () => void;
   setCurrency: (currency: "USD" | "ARS") => Promise<void>;
 }
@@ -79,14 +81,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(
     async (name: string, email: string, password: string) => {
-      const res = await api<AuthResponse>("/auth/register", {
+      // La cuenta queda pendiente hasta verificar el código enviado por correo.
+      await api("/auth/register", {
         method: "POST",
         body: JSON.stringify({ name, email, password }),
+      });
+    },
+    [],
+  );
+
+  const verifyEmail = useCallback(
+    async (email: string, code: string) => {
+      const res = await api<AuthResponse>("/auth/verify-email", {
+        method: "POST",
+        body: JSON.stringify({ email, code }),
       });
       saveSession(res);
     },
     [saveSession],
   );
+
+  const resendCode = useCallback(async (email: string) => {
+    await api("/auth/resend-code", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
@@ -108,8 +128,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo(
-    () => ({ user, token, loading, login, register, logout, setCurrency }),
-    [user, token, loading, login, register, logout, setCurrency],
+    () => ({
+      user,
+      token,
+      loading,
+      login,
+      register,
+      verifyEmail,
+      resendCode,
+      logout,
+      setCurrency,
+    }),
+    [
+      user,
+      token,
+      loading,
+      login,
+      register,
+      verifyEmail,
+      resendCode,
+      logout,
+      setCurrency,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
