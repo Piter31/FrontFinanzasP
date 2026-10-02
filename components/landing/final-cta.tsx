@@ -27,7 +27,7 @@ export function FinalCta() {
               </CtaButton>
             </div>
             {/* <p className="mt-4 text-xs text-zinc-400">
-              Gratis para siempre · Sin tarjeta
+              Gratis por 14 días · Sin tarjeta
             </p> */}
           </div>
         </div>

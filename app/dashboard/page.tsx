@@ -1,15 +1,17 @@
 "use client";
 
-import { LogOut, Plus, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import Link from "next/link";
+import { Hourglass, LogOut, Plus, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { StatCard } from "@/components/stat-card";
 import { BudgetAlerts } from "@/components/budget-alerts";
 import { BarChart } from "@/components/bar-chart";
 import { DonutChart } from "@/components/donut-chart";
 import { SavingsGoal } from "@/components/savings-goal";
 import { SuggestionBox } from "@/components/suggestion-box";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { UpgradeCard } from "@/components/upgrade-card";
 import { useTransactionModal } from "@/components/transaction-modal";
 import { useAuth } from "@/lib/auth-context";
+import { planMeets, trialDaysLeft } from "@/lib/plans";
 import { useCurrency } from "@/lib/use-currency";
 import { useDashboard } from "@/lib/use-dashboard";
 import { useShowCharts } from "@/lib/use-show-charts";
@@ -44,6 +46,12 @@ export default function DashboardPage() {
   const { format } = useCurrency();
   const { showCharts } = useShowCharts();
 
+  const isAdmin = user?.role === "ADMIN";
+  // Gráficos, meta de ahorro y presupuestos son funcionalidades del plan Plus.
+  const canUsePlus =
+    isAdmin || (user?.plan != null && planMeets(user.plan, "PLUS"));
+  const diasPrueba = user ? trialDaysLeft(user) : null;
+
   const pct = (curr: number, prev: number) =>
     prev === 0 ? null : ((curr - prev) / prev) * 100;
   const pctIngresos = data ? pct(data.ingresosMes, data.ingresosMesAnterior) : null;
@@ -63,6 +71,15 @@ export default function DashboardPage() {
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
             Resumen de tus finanzas personales
           </p>
+          {diasPrueba != null && (
+            <Link
+              href="/#planes"
+              className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+            >
+              <Hourglass className="size-3.5" />
+              Prueba gratis: {diasPrueba === 1 ? "queda 1 día" : `quedan ${diasPrueba} días`}
+            </Link>
+          )}
         </div>
 
         <div className="flex flex-col items-end gap-3">
@@ -158,17 +175,36 @@ export default function DashboardPage() {
             />
           </section>
 
-          {showCharts && (
-            <section>
-              <h2 className="mb-3 text-lg font-semibold">Gráficos</h2>
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <BarChart data={data.series} />
-                <DonutChart data={data.categorias} />
-              </div>
+          {canUsePlus ? (
+            <>
+              {showCharts && data.series && data.categorias && (
+                <section>
+                  <h2 className="mb-3 text-lg font-semibold">Gráficos</h2>
+                  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <BarChart data={data.series} />
+                    <DonutChart data={data.categorias} />
+                  </div>
+                </section>
+              )}
+
+              {data.meta && (
+                <SavingsGoal meta={data.meta} onSave={updateGoal} />
+              )}
+            </>
+          ) : (
+            <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <UpgradeCard
+                title="Gráficos de tus finanzas"
+                description="El gráfico de ingresos vs gastos y la distribución de gastos por categoría están disponibles desde el plan Plus."
+                requiredPlan="PLUS"
+              />
+              <UpgradeCard
+                title="Meta de ahorro y presupuestos"
+                description="Definí tu objetivo de ahorro y límites de gasto por categoría con alertas automáticas, desde el plan Plus."
+                requiredPlan="PLUS"
+              />
             </section>
           )}
-
-          <SavingsGoal meta={data.meta} onSave={updateGoal} />
 
           <SuggestionBox />
         </>

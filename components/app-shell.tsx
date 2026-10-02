@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Wallet } from "lucide-react";
+import { Hourglass, Wallet } from "lucide-react";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { effectiveStatus } from "@/lib/plans";
 import { TransactionsProvider } from "@/lib/transactions-context";
 import { TransactionModalProvider } from "@/components/transaction-modal";
 import { Sidebar } from "@/components/sidebar";
@@ -26,32 +27,68 @@ function Splash() {
   );
 }
 
+/** Se muestra cuando el trial de 14 días o el período pago ya vencieron. */
+function SubscriptionExpired({ onLogout }: { onLogout: () => void }) {
+  return (
+    <div className="grid min-h-screen place-items-center p-4">
+      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
+        <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-amber-500/15 text-amber-500">
+          <Hourglass className="size-6" />
+        </span>
+        <h1 className="mt-4 text-xl font-bold tracking-tight">
+          Tu período de prueba terminó
+        </h1>
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          Los 14 días gratis llegaron a su fin. Elegí un plan para seguir
+          usando FinanzasP: el plan Gratis continúa por US$3,79/mes.
+        </p>
+        <Link
+          href="/#planes"
+          className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
+        >
+          Ver planes
+        </Link>
+        <button
+          type="button"
+          onClick={onLogout}
+          className="mt-3 w-full rounded-xl border border-zinc-200 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800"
+        >
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Shell({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const isAuthRoute = AUTH_ROUTES.includes(pathname);
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
-  // (b) sin sesión y ruta no pública → /login
-  // (c) con sesión en la landing o en una auth route → /dashboard
+  // Sin sesión y ruta no pública → /login; con sesión en una auth route → /dashboard.
+  // La landing (/) es pública para todos: también la puede ver un usuario con
+  // sesión (necesario para consultar planes y futuros upgrades).
   useEffect(() => {
     if (loading) return;
     if (!user && !isPublicRoute) router.replace("/login");
-    else if (user && (pathname === "/" || isAuthRoute))
-      router.replace("/dashboard");
-  }, [user, loading, isPublicRoute, isAuthRoute, pathname, router]);
+    else if (user && isAuthRoute) router.replace("/dashboard");
+  }, [user, loading, isPublicRoute, isAuthRoute, router]);
 
-  // (a) cargando → Splash (también cubre los redirects para evitar flashes)
   if (loading) return <Splash />;
   if (!user) {
-    // (d) landing pública y (e) pantallas de auth: sin sidebar ni providers de app
+    // Landing pública y pantallas de auth: sin sidebar ni providers de app
     if (isPublicRoute) return <>{children}</>;
     return <Splash />;
   }
-  if (pathname === "/" || isAuthRoute) return <Splash />;
+  if (isAuthRoute) return <Splash />;
+  if (pathname === "/") return <>{children}</>;
 
-  // (f) resto de la app con sesión → shell con Sidebar
+  // Suscripción vencida → pantalla de renovación (el rol ADMIN nunca se bloquea).
+  if (user.role !== "ADMIN" && effectiveStatus(user) === "EXPIRED") {
+    return <SubscriptionExpired onLogout={logout} />;
+  }
 
   return (
     <TransactionsProvider>
