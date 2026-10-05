@@ -16,19 +16,19 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <LandingNav />
-      <main className="flex-1">
-        <Hero />
-        <ProblemSection />
-        <FeaturesSection />
-        <DashboardPreview />
-        <PricingSection />
-        <ComparisonTable />
-        <BenefitsSection />
-        <RoadmapSection />
-        <Testimonials />
-        <Faq />
-        <FinalCta />
-      </main>
+        <main className="flex-1">
+          <Hero />
+          <ProblemSection />
+          <FeaturesSection />
+          <DashboardPreview />
+          <PricingSection />
+          <ComparisonTable />
+          <BenefitsSection />
+          <RoadmapSection />
+          <Testimonials />
+          <Faq />
+          <FinalCta />
+        </main>
       <LandingFooter />
     </div>
   );
