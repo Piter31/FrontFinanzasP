@@ -33,6 +33,12 @@ interface AuthContextValue {
   register: (name: string, email: string, password: string) => Promise<void>;
   verifyEmail: (email: string, code: string) => Promise<void>;
   resendCode: (email: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
+  resetPassword: (
+    email: string,
+    code: string,
+    newPassword: string,
+  ) => Promise<void>;
   logout: () => void;
   setCurrency: (currency: "USD" | "ARS") => Promise<void>;
 }
@@ -108,6 +114,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Pide el código de recuperación: el backend responde igual exista o no la cuenta.
+  const forgotPassword = useCallback(async (email: string) => {
+    await api("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  }, []);
+
+  // Envía el código recibido por correo junto con la nueva contraseña.
+  const resetPassword = useCallback(
+    async (email: string, code: string, newPassword: string) => {
+      await api("/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({ email, code, newPassword }),
+      });
+    },
+    [],
+  );
+
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
@@ -136,6 +161,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       register,
       verifyEmail,
       resendCode,
+      forgotPassword,
+      resetPassword,
       logout,
       setCurrency,
     }),
@@ -147,6 +174,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       register,
       verifyEmail,
       resendCode,
+      forgotPassword,
+      resetPassword,
       logout,
       setCurrency,
     ],
