@@ -60,10 +60,10 @@ export function LandingFooter() {
           <div>
             <h3 className="mb-3 text-sm font-semibold">Contacto</h3>
             <a
-              href="mailto:contacto@finanzasp.com"
+              href="mailto:finanzasp.online@gmail.com"
               className="text-sm text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
             >
-              contacto@finanzasp.com
+              finanzasp.online@gmail.com
             </a>
             <div className="mt-4 flex gap-2">
               {socialIcons.map(({ label, icon: Icon }) => (
@@ -81,7 +81,7 @@ export function LandingFooter() {
         </div>
 
         <div className="border-t border-zinc-200 py-6 text-center text-xs text-zinc-400 dark:border-zinc-800">
-          © {new Date().getFullYear()} FinanzasP — Organizá tus finanzas
+          © {new Date().getFullYear()} FinanzasP (Version 1.0) — Organizá tus finanzas
           personales.
         </div>
       </div>

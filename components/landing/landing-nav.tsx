@@ -15,7 +15,7 @@ export function LandingNav() {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-zinc-50/80 backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-950/80">
+    <header className="sticky top-10 z-40 border-b border-zinc-200/80 bg-zinc-50/80 backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-950/80">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="#inicio" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
           <span className="grid size-9 place-items-center rounded-xl bg-emerald-500/15 text-emerald-500">

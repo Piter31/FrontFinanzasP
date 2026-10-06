@@ -3,7 +3,7 @@ import { Badge, CtaButton, Reveal } from "./ui";
 
 export function Hero() {
   return (
-    <section id="inicio" className="relative scroll-mt-24 overflow-hidden">
+    <section id="inicio" className="relative scroll-mt-28 overflow-hidden">
       {/* Fondo decorativo: gradiente emerald muy tenue */}
       <div
         aria-hidden
@@ -12,7 +12,7 @@ export function Hero() {
 
       <div className="relative mx-auto w-full max-w-6xl px-4 pt-20 pb-16 text-center sm:px-6 sm:pt-25 sm:pb-24">
         <Reveal>
-          <Badge tone="emerald">· Prueba Gratis por 14 días ·</Badge>
+          <Badge tone="emerald">· Prueba Gratis por 10 días ·</Badge>
         </Reveal>
 
         <Reveal delay={100}>

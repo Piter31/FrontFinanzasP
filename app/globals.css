@@ -27,3 +27,12 @@
 html {
   scroll-behavior: smooth;
 }
+
+@keyframes banner-shine {
+  from {
+    transform: translateX(-150%) skewX(-12deg);
+  }
+  to {
+    transform: translateX(450%) skewX(-12deg);
+  }
+}

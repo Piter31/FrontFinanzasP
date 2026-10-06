@@ -152,6 +152,20 @@ export function checkoutHref(plan: PlanId, period: BillingPeriod): string {
 }
 
 // ---------------------------------------------------------------------------
+// Oferta de lanzamiento
+// ---------------------------------------------------------------------------
+
+/**
+ * Oferta de lanzamiento: el precio actual está disponible por única vez
+ * durante 2 meses; al terminar el contador el precio aumenta y no vuelve.
+ */
+export const launchOffer = {
+  /** Fin de la oferta (lanzamiento 6 oct 2026 + 6 meses). */
+  endsAt: "2026-11-15T23:59:59-03:00",
+  ctaHref: "/#planes",
+} as const;
+
+// ---------------------------------------------------------------------------
 // Tabla comparativa de planes
 // ---------------------------------------------------------------------------
 
