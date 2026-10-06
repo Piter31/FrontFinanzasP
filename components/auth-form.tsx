@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Wallet } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { ApiError } from "@/lib/api";
@@ -14,6 +14,9 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
   const isLogin = mode === "login";
   const { login, register } = useAuth();
   const router = useRouter();
+  const params = useSearchParams();
+  // Aviso al volver de /recuperar tras restablecer la contraseña con éxito.
+  const showResetNotice = isLogin && params.get("recuperada") === "1";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,7 +25,7 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     if (!isLogin && name.trim().length < 2) {
@@ -143,6 +146,13 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
               </div>
             </label>
 
+            {showResetNotice && (
+              <p className="text-sm text-emerald-500">
+                Contraseña actualizada. Ya podés iniciar sesión con tu nueva
+                contraseña.
+              </p>
+            )}
+
             {error && <p className="text-sm text-rose-500">{error}</p>}
 
             <button
@@ -156,6 +166,15 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
                   ? "Entrar"
                   : "Registrarme"}
             </button>
+
+            {isLogin && (
+              <Link
+                href="/recuperar"
+                className="block text-center text-sm font-medium text-emerald-500 hover:underline"
+              >
+                ¿Olvidaste tu contraseña?
+              </Link>
+            )}
           </div>
         </form>
 
