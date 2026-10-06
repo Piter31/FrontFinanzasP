@@ -172,7 +172,7 @@ export function PricingSection() {
       </div>
 
       <Reveal delay={200}>
-        <p className="mx-auto mt-8 max-w-xl text-center text-xs text-zinc-400 dark:text-zinc-500">
+        <p className="mx-auto mt-8 max-w-xl text-center text-xl text-zinc-400 dark:text-zinc-500">
           Los pagos online se habilitan próximamente. Creá tu cuenta gratis hoy
           y vas a poder actualizar tu plan cuando estén disponibles.
         </p>
