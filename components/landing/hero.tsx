@@ -3,16 +3,16 @@ import { Badge, CtaButton, Reveal } from "./ui";
 
 export function Hero() {
   return (
-    <section id="inicio" className="relative scroll-mt-24 overflow-hidden">
+    <section id="inicio" className="relative scroll-mt-28 overflow-hidden">
       {/* Fondo decorativo: gradiente emerald muy tenue */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(16,185,129,0.08),transparent_75%)] dark:bg-[radial-gradient(60%_50%_at_50%_0%,rgba(16,185,129,0.12),transparent_75%)]"
       />
 
-      <div className="relative mx-auto w-full max-w-6xl px-4 pt-20 pb-16 text-center sm:px-6 sm:pt-28 sm:pb-24">
+      <div className="relative mx-auto w-full max-w-6xl px-4 pt-20 pb-16 text-center sm:px-6 sm:pt-25 sm:pb-24">
         <Reveal>
-          <Badge tone="emerald">Gratis para empezar · Sin tarjeta</Badge>
+          <Badge tone="emerald">· Prueba Gratis por 10 días ·</Badge>
         </Reveal>
 
         <Reveal delay={100}>
@@ -40,7 +40,7 @@ export function Hero() {
             </CtaButton>
           </div>
           {/* <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
-            Gratis para siempre · Sin tarjeta · Listo en 2 minutos
+            Gratis por 14 días · Sin tarjeta · Listo en 2 minutos
           </p> */}
         </Reveal>
 

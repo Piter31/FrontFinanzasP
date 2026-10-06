@@ -1,4 +1,5 @@
 import { LandingNav } from "@/components/landing/landing-nav";
+import { BannerOferta, BannerOfertaInline } from "@/components/landing/banner-oferta";
 import { Hero } from "@/components/landing/hero";
 import { ProblemSection } from "@/components/landing/problem-section";
 import { FeaturesSection } from "@/components/landing/features-section";
@@ -15,20 +16,24 @@ import { LandingFooter } from "@/components/landing/landing-footer";
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
+      <BannerOferta />
       <LandingNav />
-      <main className="flex-1">
-        <Hero />
-        <ProblemSection />
-        <FeaturesSection />
-        <DashboardPreview />
-        <PricingSection />
-        <ComparisonTable />
-        <BenefitsSection />
-        <RoadmapSection />
-        <Testimonials />
-        <Faq />
-        <FinalCta />
-      </main>
+        <main className="flex-1">
+          <Hero />
+          <BannerOfertaInline />
+          <ProblemSection />
+          <FeaturesSection />
+          <DashboardPreview />
+          <PricingSection />
+          <ComparisonTable />
+          <BannerOfertaInline />
+          <BenefitsSection />
+          <RoadmapSection />
+          <Testimonials />
+          <Faq />
+          <BannerOfertaInline />
+          <FinalCta />
+        </main>
       <LandingFooter />
     </div>
   );

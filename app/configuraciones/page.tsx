@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Check, LogOut, Pencil, Trash2, X } from "lucide-react";
 import { Card } from "@/components/card";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UpgradeCard } from "@/components/upgrade-card";
 import { useAuth } from "@/lib/auth-context";
 import { CATEGORIAS_GASTO } from "@/lib/data";
+import { planMeets } from "@/lib/plans";
 import { useBudgets } from "@/lib/use-budgets";
 import { useCurrency } from "@/lib/use-currency";
 import { useShowCharts } from "@/lib/use-show-charts";
@@ -19,6 +21,10 @@ export default function ConfiguracionesPage() {
   const { user, logout, setCurrency } = useAuth();
   const { showCharts, setShowCharts } = useShowCharts();
   const currency = user?.currency ?? "USD";
+  // Presupuestos por categoría: funcionalidad del plan Plus (ADMIN la ve siempre).
+  const canUseBudgets =
+    user?.role === "ADMIN" ||
+    (user?.plan != null && planMeets(user.plan, "PLUS"));
   const [savingCurrency, setSavingCurrency] = useState(false);
   const [currencyError, setCurrencyError] = useState("");
   const { presupuestos, saveLimite, removeLimite } = useBudgets();
@@ -216,6 +222,7 @@ export default function ConfiguracionesPage() {
         </div>
       </Card>
 
+      {canUseBudgets ? (
       <Card className="divide-y divide-zinc-200 dark:divide-zinc-800">
         <div className="p-5">
           <p className="text-sm font-medium">Presupuestos por categoría</p>
@@ -372,6 +379,13 @@ export default function ConfiguracionesPage() {
           </ul>
         )}
       </Card>
+      ) : (
+        <UpgradeCard
+          title="Presupuestos por categoría"
+          description="Definí límites de gasto mensual por categoría y recibí alertas al llegar al 80% o superarlos, desde el plan Plus."
+          requiredPlan="PLUS"
+        />
+      )}
     </div>
   );
 }

@@ -69,7 +69,11 @@ function PlanCard({
 }) {
   const isFree = plan.id === "free";
   const price = plan.price[period];
-  const suffix = isFree || period === "monthly" ? "/mes" : "/año";
+  const suffix = isFree
+    ? `por ${plan.trialDays ?? 14} días`
+    : period === "monthly"
+      ? "/mes"
+      : "/año";
 
   return (
     <article
@@ -101,6 +105,12 @@ function PlanCard({
       {period === "yearly" && price > 0 && (
         <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">
           equivale a {formatPlanPrice(plan.price.yearly / 12)}/mes
+        </p>
+      )}
+      {isFree && plan.priceAfterTrial && (
+        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          después {formatPlanPrice(plan.priceAfterTrial[period])}
+          {period === "monthly" ? "/mes" : "/año"}
         </p>
       )}
 

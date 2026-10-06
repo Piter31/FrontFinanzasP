@@ -51,6 +51,10 @@ export interface PricingPlan {
   highlighted?: boolean;
   /** yearly = precio total del año */
   price: Record<BillingPeriod, number>;
+  /** Días de prueba gratis antes de empezar a cobrar (solo plan free). */
+  trialDays?: number;
+  /** Precio que aplica al terminar la prueba (solo plan free). */
+  priceAfterTrial?: Record<BillingPeriod, number>;
   ctaLabel: string;
   features: PlanFeature[];
 }
@@ -65,6 +69,8 @@ export const pricingPlans: PricingPlan[] = [
     name: "Gratis",
     tagline: "Todo lo esencial para empezar a ordenar tus finanzas.",
     price: { monthly: 0, yearly: 0 },
+    trialDays: 14,
+    priceAfterTrial: { monthly: 3.79, yearly: 37.9 },
     ctaLabel: "Empezar gratis",
     features: [
       { label: "Registro y acceso a tu cuenta", availability: "available" },
@@ -144,6 +150,20 @@ export function checkoutHref(plan: PlanId, period: BillingPeriod): string {
   const params = new URLSearchParams({ plan, periodo: period });
   return `/registro?${params.toString()}`;
 }
+
+// ---------------------------------------------------------------------------
+// Oferta de lanzamiento
+// ---------------------------------------------------------------------------
+
+/**
+ * Oferta de lanzamiento: el precio actual está disponible por única vez
+ * durante 2 meses; al terminar el contador el precio aumenta y no vuelve.
+ */
+export const launchOffer = {
+  /** Fin de la oferta (lanzamiento 6 oct 2026 + 6 meses). */
+  endsAt: "2026-11-15T23:59:59-03:00",
+  ctaHref: "/#planes",
+} as const;
 
 // ---------------------------------------------------------------------------
 // Tabla comparativa de planes
@@ -479,7 +499,7 @@ export const faqItems: FaqItem[] = [
   {
     question: "¿El plan Gratis tiene costo?",
     answer:
-      "No. El plan Gratis es gratis para siempre y no te pedimos tarjeta para crear tu cuenta.",
+      "Es gratis durante los primeros 14 días y no te pedimos tarjeta para crear tu cuenta. Cuando termina la prueba, continuar con el plan Gratis cuesta US$3,79/mes (o US$37,90/año).",
   },
   {
     question: "¿Puedo cambiar de plan?",

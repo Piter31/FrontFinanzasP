@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { api } from "./api";
+import type { Plan, SubscriptionStatus } from "./plans";
 
 export interface AuthUser {
   id: string;
@@ -17,6 +18,10 @@ export interface AuthUser {
   name: string | null;
   currency: "USD" | "ARS";
   role: "USER" | "ADMIN";
+  plan: Plan;
+  subscriptionStatus: SubscriptionStatus;
+  trialEndsAt: string | null;
+  currentPeriodEnd: string | null;
 }
 
 interface AuthResponse {

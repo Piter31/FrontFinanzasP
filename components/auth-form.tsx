@@ -59,13 +59,15 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
     <div className="grid min-h-screen place-items-center p-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center gap-2 text-center">
+          <Link href="/" className="flex flex-col items-center gap-2 text-center">
           <span className="grid size-12 place-items-center rounded-2xl bg-emerald-500/15 text-emerald-500">
-            <Wallet className="size-6" />
+            <Wallet className="size-7" />
           </span>
-          <h1 className="text-2xl font-bold tracking-tight">FinanzasP</h1>
+          <h1 className="text-3xl font-bold tracking-tight">FinanzasP</h1>
+          </Link>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {isLogin
-              ? "Inicia sesión para ver tu panel de finanzas personales"
+              ? "Inicia sesión para ver tu panel de Finanzas Personales"
               : "Crea tu cuenta para empezar"}
           </p>
         </div>

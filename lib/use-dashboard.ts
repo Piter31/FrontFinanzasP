@@ -11,9 +11,12 @@ export interface DashboardData {
   gastosMes: number;
   ingresosMesAnterior: number;
   gastosMesAnterior: number;
-  series: { label: string; ingresos: number; gastos: number }[];
-  categorias: { categoria: string; total: number }[];
-  meta: { objetivo: number; ahorro: number; porcentaje: number };
+  /** null en planes sin acceso a gráficos (FREE). */
+  series: { label: string; ingresos: number; gastos: number }[] | null;
+  /** null en planes sin acceso a gráficos (FREE). */
+  categorias: { categoria: string; total: number }[] | null;
+  /** null en planes sin meta de ahorro (FREE). */
+  meta: { objetivo: number; ahorro: number; porcentaje: number } | null;
 }
 
 /**

@@ -3,6 +3,7 @@
 import { Menu, Wallet, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { landingNavLinks } from "@/lib/landing/data";
 import { CtaButton } from "./ui";
 
@@ -11,9 +12,10 @@ const linkClass =
 
 export function LandingNav() {
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-zinc-50/80 backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-950/80">
+    <header className="sticky top-10 z-40 border-b border-zinc-200/80 bg-zinc-50/80 backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-950/80">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="#inicio" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
           <span className="grid size-9 place-items-center rounded-xl bg-emerald-500/15 text-emerald-500">
@@ -31,10 +33,16 @@ export function LandingNav() {
         </div>
 
         <div className="hidden items-center gap-2 md:flex">
-          <CtaButton href="/login" variant="ghost">
-            Iniciar sesión
-          </CtaButton>
-          <CtaButton href="/registro">Empezar gratis</CtaButton>
+          {user ? (
+            <CtaButton href="/dashboard">Ir al dashboard</CtaButton>
+          ) : (
+            <>
+              <CtaButton href="/login" variant="ghost">
+                Iniciar sesión
+              </CtaButton>
+              <CtaButton href="/registro">Empezar gratis</CtaButton>
+            </>
+          )}
         </div>
 
         <button
@@ -62,12 +70,20 @@ export function LandingNav() {
               </Link>
             ))}
             <div className="mt-2 flex flex-col gap-2">
-              <CtaButton href="/login" variant="ghost" className="w-full">
-                Iniciar sesión
-              </CtaButton>
-              <CtaButton href="/registro" className="w-full">
-                Empezar gratis
-              </CtaButton>
+              {user ? (
+                <CtaButton href="/dashboard" className="w-full">
+                  Ir al dashboard
+                </CtaButton>
+              ) : (
+                <>
+                  <CtaButton href="/login" variant="ghost" className="w-full">
+                    Iniciar sesión
+                  </CtaButton>
+                  <CtaButton href="/registro" className="w-full">
+                    Empezar gratis
+                  </CtaButton>
+                </>
+              )}
             </div>
           </div>
         </div>
