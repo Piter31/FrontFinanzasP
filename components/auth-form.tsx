@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Wallet } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { ApiError } from "@/lib/api";
@@ -14,6 +14,9 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
   const isLogin = mode === "login";
   const { login, register } = useAuth();
   const router = useRouter();
+  const params = useSearchParams();
+  // Aviso al volver de /recuperar tras restablecer la contraseña con éxito.
+  const showResetNotice = isLogin && params.get("recuperada") === "1";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,7 +25,7 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     if (!isLogin && name.trim().length < 2) {
@@ -59,13 +62,15 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
     <div className="grid min-h-screen place-items-center p-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center gap-2 text-center">
+          <Link href="/" className="flex flex-col items-center gap-2 text-center">
           <span className="grid size-12 place-items-center rounded-2xl bg-emerald-500/15 text-emerald-500">
-            <Wallet className="size-6" />
+            <Wallet className="size-7" />
           </span>
-          <h1 className="text-2xl font-bold tracking-tight">FinanzasP</h1>
+          <h1 className="text-3xl font-bold tracking-tight">FinanzasP</h1>
+          </Link>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {isLogin
-              ? "Inicia sesión para ver tu panel de finanzas personales"
+              ? "Inicia sesión para ver tu panel de Finanzas Personales"
               : "Crea tu cuenta para empezar"}
           </p>
         </div>
@@ -141,6 +146,13 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
               </div>
             </label>
 
+            {showResetNotice && (
+              <p className="text-sm text-emerald-500">
+                Contraseña actualizada. Ya podés iniciar sesión con tu nueva
+                contraseña.
+              </p>
+            )}
+
             {error && <p className="text-sm text-rose-500">{error}</p>}
 
             <button
@@ -154,6 +166,15 @@ export function AuthForm({ mode }: { mode: "login" | "registro" }) {
                   ? "Entrar"
                   : "Registrarme"}
             </button>
+
+            {isLogin && (
+              <Link
+                href="/recuperar"
+                className="block text-center text-sm font-medium text-emerald-500 hover:underline"
+              >
+                ¿Olvidaste tu contraseña?
+              </Link>
+            )}
           </div>
         </form>
 
