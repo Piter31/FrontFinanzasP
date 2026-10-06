@@ -66,10 +66,10 @@ export interface PricingPlan {
 export const pricingPlans: PricingPlan[] = [
   {
     id: "free",
-    name: "Gratis",
+    name: "Básico",
     tagline: "Todo lo esencial para empezar a ordenar tus finanzas.",
     price: { monthly: 0, yearly: 0 },
-    trialDays: 14,
+    trialDays: 10,
     priceAfterTrial: { monthly: 3.79, yearly: 37.9 },
     ctaLabel: "Empezar gratis",
     features: [
@@ -95,7 +95,7 @@ export const pricingPlans: PricingPlan[] = [
     price: { monthly: 4.99, yearly: 49.9 },
     ctaLabel: "Elegir Plus",
     features: [
-      { label: "Todo lo incluido en Gratis", availability: "available" },
+      { label: "Todo lo incluido en Básico", availability: "available" },
       { label: "Gráfico de ingresos vs gastos", availability: "available" },
       { label: "Gráfico de gastos por categoría", availability: "available" },
       { label: "Meta de ahorro", availability: "available" },
@@ -299,35 +299,35 @@ export const featureCards: FeatureCard[] = [
     title: "Balance total",
     description:
       "Tu situación completa en un número, actualizado con cada movimiento.",
-    planLabel: "Gratis",
+    planLabel: "Básico",
     availability: "available",
   },
   {
     icon: TrendingUp,
     title: "Ingresos",
     description: "Registrá y seguí todo lo que entra en el mes.",
-    planLabel: "Gratis",
+    planLabel: "Básico",
     availability: "available",
   },
   {
     icon: TrendingDown,
     title: "Gastos",
     description: "Cada gasto registrado y categorizado, sin que se te pase nada.",
-    planLabel: "Gratis",
+    planLabel: "Básico",
     availability: "available",
   },
   {
     icon: ArrowLeftRight,
     title: "Transacciones",
     description: "Historial completo de movimientos con filtro por tipo.",
-    planLabel: "Gratis",
+    planLabel: "Básico",
     availability: "available",
   },
   {
     icon: CalendarClock,
     title: "Comparación mensual",
     description: "Variación porcentual de tus ingresos y gastos vs el mes anterior.",
-    planLabel: "Gratis",
+    planLabel: "Básico",
     availability: "available",
   },
   {
@@ -463,7 +463,7 @@ export interface TestimonialSlot {
 export const testimonialSlots: TestimonialSlot[] = [
   {
     id: 1,
-    plan: "Plan Gratis",
+    plan: "Plan Básico",
     comment:
       "Tu opinión puede aparecer acá. Probá FinanzasP y contanos tu experiencia.",
   },
@@ -497,9 +497,9 @@ export const faqItems: FaqItem[] = [
       "FinanzasP es una app de finanzas personales para registrar tus ingresos y gastos, ver tu balance, comparar meses, usar gráficos, presupuestos por categoría y una meta de ahorro.",
   },
   {
-    question: "¿El plan Gratis tiene costo?",
+    question: "¿El plan Básico tiene costo?",
     answer:
-      "Es gratis durante los primeros 14 días y no te pedimos tarjeta para crear tu cuenta. Cuando termina la prueba, continuar con el plan Gratis cuesta US$3,79/mes (o US$37,90/año).",
+      "Es gratis durante los primeros 10 días. Cuando termina la prueba, continuar con el plan Básico cuesta US$3,79/mes (o US$37,90/año).",
   },
   {
     question: "¿Puedo cambiar de plan?",
