@@ -11,7 +11,7 @@ import { SuggestionBox } from "@/components/suggestion-box";
 import { UpgradeCard } from "@/components/upgrade-card";
 import { useTransactionModal } from "@/components/transaction-modal";
 import { useAuth } from "@/lib/auth-context";
-import { planMeets, trialDaysLeft } from "@/lib/plans";
+import { effectivePlan, planMeets, trialDaysLeft } from "@/lib/plans";
 import { useCurrency } from "@/lib/use-currency";
 import { useDashboard } from "@/lib/use-dashboard";
 import { useShowCharts } from "@/lib/use-show-charts";
@@ -47,9 +47,10 @@ export default function DashboardPage() {
   const { showCharts } = useShowCharts();
 
   const isAdmin = user?.role === "ADMIN";
-  // Gráficos, meta de ahorro y presupuestos son funcionalidades del plan Plus.
+  // Gráficos, meta de ahorro y presupuestos: plan Plus (también habilitado
+  // durante la prueba gratis).
   const canUsePlus =
-    isAdmin || (user?.plan != null && planMeets(user.plan, "PLUS"));
+    isAdmin || (user?.plan != null && planMeets(effectivePlan(user), "PLUS"));
   const diasPrueba = user ? trialDaysLeft(user) : null;
 
   const pct = (curr: number, prev: number) =>

@@ -70,7 +70,7 @@ function PlanCard({
   const isFree = plan.id === "free";
   const price = plan.price[period];
   const suffix = isFree
-    ? `por ${plan.trialDays ?? 14} días`
+    ? `por ${plan.trialDays ?? 10} días`
     : period === "monthly"
       ? "/mes"
       : "/año";
