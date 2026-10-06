@@ -12,6 +12,7 @@ import { Sidebar } from "@/components/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const AUTH_ROUTES = ["/login", "/registro", "/verificar", "/recuperar"];
+const PUBLIC_ROUTES = ["/", ...AUTH_ROUTES];
 
 function Splash() {
   return (
