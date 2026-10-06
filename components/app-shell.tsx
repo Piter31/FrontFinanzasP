@@ -27,7 +27,7 @@ function Splash() {
   );
 }
 
-/** Se muestra cuando el trial de 14 días o el período pago ya vencieron. */
+/** Se muestra cuando el trial de 10 días o el período pago ya vencieron. */
 function SubscriptionExpired({ onLogout }: { onLogout: () => void }) {
   return (
     <div className="grid min-h-screen place-items-center p-4">
@@ -39,7 +39,7 @@ function SubscriptionExpired({ onLogout }: { onLogout: () => void }) {
           Tu período de prueba terminó
         </h1>
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-          Los 14 días gratis llegaron a su fin. Elegí un plan para seguir
+          Los 10 días gratis llegaron a su fin. Elegí un plan para seguir
           usando FinanzasP: el plan Gratis continúa por US$3,79/mes.
         </p>
         <Link

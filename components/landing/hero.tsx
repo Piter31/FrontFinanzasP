@@ -40,7 +40,7 @@ export function Hero() {
             </CtaButton>
           </div>
           {/* <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-500">
-            Gratis por 14 días · Sin tarjeta · Listo en 2 minutos
+            Gratis por 10 días · Sin tarjeta · Listo en 2 minutos
           </p> */}
         </Reveal>
 

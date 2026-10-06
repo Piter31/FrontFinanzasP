@@ -7,7 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { UpgradeCard } from "@/components/upgrade-card";
 import { useAuth } from "@/lib/auth-context";
 import { CATEGORIAS_GASTO } from "@/lib/data";
-import { planMeets } from "@/lib/plans";
+import { effectivePlan, planMeets } from "@/lib/plans";
 import { useBudgets } from "@/lib/use-budgets";
 import { useCurrency } from "@/lib/use-currency";
 import { useShowCharts } from "@/lib/use-show-charts";
@@ -21,10 +21,11 @@ export default function ConfiguracionesPage() {
   const { user, logout, setCurrency } = useAuth();
   const { showCharts, setShowCharts } = useShowCharts();
   const currency = user?.currency ?? "USD";
-  // Presupuestos por categoría: funcionalidad del plan Plus (ADMIN la ve siempre).
+  // Presupuestos por categoría: plan Plus (también durante la prueba gratis;
+  // ADMIN la ve siempre).
   const canUseBudgets =
     user?.role === "ADMIN" ||
-    (user?.plan != null && planMeets(user.plan, "PLUS"));
+    (user?.plan != null && planMeets(effectivePlan(user), "PLUS"));
   const [savingCurrency, setSavingCurrency] = useState(false);
   const [currencyError, setCurrencyError] = useState("");
   const { presupuestos, saveLimite, removeLimite } = useBudgets();

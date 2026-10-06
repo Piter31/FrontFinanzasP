@@ -27,6 +27,11 @@ export function planMeets(plan: Plan, required: Plan): boolean {
   return PLAN_ORDER[plan] >= PLAN_ORDER[required];
 }
 
+/** Durante la prueba gratis se evalúan los permisos como si fuera plan Plus. */
+export function trialEffectivePlan(plan: Plan): Plan {
+  return planMeets(plan, "PLUS") ? plan : "PLUS";
+}
+
 interface SubscriptionDates {
   subscriptionStatus: SubscriptionStatus;
   trialEndsAt: string | null;
@@ -57,4 +62,14 @@ export function trialDaysLeft(user: SubscriptionDates): number | null {
   if (user.subscriptionStatus !== "TRIALING" || !user.trialEndsAt) return null;
   const ms = new Date(user.trialEndsAt).getTime() - Date.now();
   return Math.max(0, Math.ceil(ms / 86_400_000));
+}
+
+/**
+ * Plan con el que se evalúan los permisos en la UI (espejo de
+ * PlansService.getEffectivePlan): con el trial vigente se habilita Plus.
+ */
+export function effectivePlan(user: { plan: Plan } & SubscriptionDates): Plan {
+  return effectiveStatus(user) === "TRIALING"
+    ? trialEffectivePlan(user.plan)
+    : user.plan;
 }
