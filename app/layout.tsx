@@ -2,9 +2,28 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 
+const seoTitle = "FinanzasP — Organizá tus Finanzas Personales";
+const seoDescription =
+  "Registrá tus ingresos y gastos, controlá tu presupuesto y entendé mejor tus finanzas personales con FinanzasP.";
+
 export const metadata: Metadata = {
-  title: "FinanzasP — Dashboard",
-  description: "Resumen de tus finanzas personales",
+  title: seoTitle,
+  description: seoDescription,
+  openGraph: {
+    title: seoTitle,
+    description: seoDescription,
+    type: "website",
+    locale: "es_AR",
+    siteName: "FinanzasP",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Dashboard de FinanzasP",
+      },
+    ],
+  },
 };
 
 // Aplica el tema guardado antes del primer paint para evitar parpadeos.

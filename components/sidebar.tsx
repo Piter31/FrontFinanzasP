@@ -13,7 +13,7 @@ import {
 import { useAuth } from "@/lib/auth-context";
 
 const NAV = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/transacciones", label: "Transacciones", icon: ArrowLeftRight },
   { href: "/configuraciones", label: "Configuraciones", icon: Settings },
 ];
@@ -33,7 +33,7 @@ export function Sidebar() {
     <>
       {/* Sidebar de escritorio */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/60 md:flex">
-        <Link href="/" className="flex items-center gap-3 px-5 pt-6">
+        <Link href="/dashboard" className="flex items-center gap-3 px-5 pt-6">
           <span className="grid size-10 place-items-center rounded-2xl bg-emerald-500/15 text-emerald-500">
             <Wallet className="size-5" />
           </span>
