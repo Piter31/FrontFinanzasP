@@ -40,7 +40,7 @@ function SubscriptionExpired({ onLogout }: { onLogout: () => void }) {
         </h1>
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
           Los 10 días gratis llegaron a su fin. Elegí un plan para seguir
-          usando FinanzasP: el plan Gratis continúa por US$3,79/mes.
+          usando FinanzasP: el plan Básico continúa por US$2,90/mes.
         </p>
         <Link
           href="/#planes"
@@ -86,7 +86,13 @@ function Shell({ children }: { children: React.ReactNode }) {
   if (pathname === "/") return <>{children}</>;
 
   // Suscripción vencida → pantalla de renovación (el rol ADMIN nunca se bloquea).
-  if (user.role !== "ADMIN" && effectiveStatus(user) === "EXPIRED") {
+  // Excepción: /suscripcion/resultado debe ser visible porque es la vuelta
+  // del checkout de Mercado Pago (justo lo que reactiva la suscripción).
+  if (
+    user.role !== "ADMIN" &&
+    effectiveStatus(user) === "EXPIRED" &&
+    pathname !== "/suscripcion/resultado"
+  ) {
     return <SubscriptionExpired onLogout={logout} />;
   }
 

@@ -70,7 +70,7 @@ export const pricingPlans: PricingPlan[] = [
     tagline: "Todo lo esencial para empezar a ordenar tus finanzas.",
     price: { monthly: 0, yearly: 0 },
     trialDays: 10,
-    priceAfterTrial: { monthly: 3.79, yearly: 37.9 },
+    priceAfterTrial: { monthly: 2.9, yearly: 29 },
     ctaLabel: "Empezar gratis",
     features: [
       { label: "Registro y acceso a tu cuenta", availability: "available" },
@@ -141,10 +141,9 @@ export function formatPlanPrice(value: number): string {
   })}`;
 }
 
-// PUNTO DE INTEGRACIÓN FUTURA DE PAGOS
-// Hoy: el alta de planes pagos todavía no cobra; el flujo es crear la cuenta primero.
-// FUTURO: aquí se crea la sesión de checkout del proveedor de pagos (Stripe/MercadoPago)
-// y se redirige al checkout; soportar upgrade/downgrade/cancelación.
+// checkoutHref: flujo para usuarios ANÓNIMOS (primero se crea la cuenta).
+// Con sesión iniciada, los CTA de planes usan startCheckout (lib/payments.ts),
+// que crea la suscripción en Mercado Pago y redirige al checkout de MP.
 export function checkoutHref(plan: PlanId, period: BillingPeriod): string {
   if (plan === "free") return "/registro";
   const params = new URLSearchParams({ plan, periodo: period });
@@ -499,7 +498,7 @@ export const faqItems: FaqItem[] = [
   {
     question: "¿El plan Básico tiene costo?",
     answer:
-      "Es gratis durante los primeros 10 días. Cuando termina la prueba, continuar con el plan Básico cuesta US$3,79/mes (o US$37,90/año).",
+      "Es gratis durante los primeros 10 días. Cuando termina la prueba, continuar con el plan Básico cuesta US$2,90/mes (o US$29,00/año).",
   },
   {
     question: "¿Puedo cambiar de plan?",

@@ -1,21 +1,32 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Check, Clock } from "lucide-react";
 import {
   checkoutHref,
   formatPlanPrice,
   pricingPlans,
   type BillingPeriod,
+  type PlanId,
   type PricingPlan,
 } from "@/lib/landing/data";
+import { useAuth } from "@/lib/auth-context";
+import { startCheckout } from "@/lib/payments";
+import type { Plan } from "@/lib/plans";
 import {
   Badge,
-  CtaButton,
   Reveal,
   Section,
   SectionHeading,
 } from "@/components/landing/ui";
+
+/** id de plan de la landing → enum del backend. */
+const PLAN_ID_TO_ENUM: Record<PlanId, Plan> = {
+  free: "FREE",
+  plus: "PLUS",
+  pro: "PRO",
+};
 
 function BillingToggle({
   period,
@@ -67,6 +78,11 @@ function PlanCard({
   plan: PricingPlan;
   period: BillingPeriod;
 }) {
+  const { user, token } = useAuth();
+  const router = useRouter();
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+
   const isFree = plan.id === "free";
   const price = plan.price[period];
   const suffix = isFree
@@ -74,6 +90,27 @@ function PlanCard({
     : period === "monthly"
       ? "/mes"
       : "/año";
+
+  const handleCta = async () => {
+    // Sin sesión: primero se crea la cuenta (el trial arranca solo).
+    if (!user || !token) {
+      router.push(checkoutHref(plan.id, period));
+      return;
+    }
+    // Con sesión: checkout de Mercado Pago y redirección al init_point.
+    if (checkoutLoading) return;
+    setCheckoutError("");
+    setCheckoutLoading(true);
+    try {
+      await startCheckout(PLAN_ID_TO_ENUM[plan.id], period, token);
+      // Si la redirección a MP sale bien, esta página se abandona.
+    } catch (err) {
+      setCheckoutError(
+        err instanceof Error ? err.message : "No se pudo iniciar el pago.",
+      );
+      setCheckoutLoading(false);
+    }
+  };
 
   return (
     <article
@@ -134,13 +171,23 @@ function PlanCard({
       </ul>
 
       <div className="mt-8">
-        <CtaButton
-          href={checkoutHref(plan.id, period)}
-          variant={plan.highlighted ? "primary" : "secondary"}
-          className="w-full"
+        <button
+          type="button"
+          onClick={() => void handleCta()}
+          disabled={checkoutLoading}
+          className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-60 ${
+            plan.highlighted
+              ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 hover:bg-emerald-600"
+              : "border border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800/60"
+          }`}
         >
-          {plan.ctaLabel}
-        </CtaButton>
+          {checkoutLoading ? "Redirigiendo a Mercado Pago…" : plan.ctaLabel}
+        </button>
+        {checkoutError && (
+          <p className="mt-2 text-center text-xs text-rose-500">
+            {checkoutError}
+          </p>
+        )}
       </div>
     </article>
   );
@@ -173,8 +220,8 @@ export function PricingSection() {
 
       <Reveal delay={200}>
         <p className="mx-auto mt-8 max-w-xl text-center text-xl text-zinc-400 dark:text-zinc-500">
-          Los pagos online se habilitan próximamente. Creá tu cuenta gratis hoy
-          y vas a poder actualizar tu plan cuando estén disponibles.
+          Pagás de forma segura con Mercado Pago. Sin permanencia: podés
+          cancelar cuando quieras.
         </p>
       </Reveal>
     </Section>
