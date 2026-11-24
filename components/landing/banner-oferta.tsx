@@ -60,7 +60,7 @@ function CountdownCompact() {
   const parts = useCountdown(launchOffer.endsAt);
   return (
     <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-black/15 px-2.5 py-0.5 font-semibold tabular-nums">
-      <Clock className="size-3.5" aria-hidden />
+      <Clock className="size-4" aria-hidden />
       {parts === null
         ? "--d --:--:--"
         : `${parts.days}d ${pad(parts.hours)}:${pad(parts.minutes)}:${pad(parts.seconds)}`}

@@ -46,6 +46,8 @@ interface AuthContextValue {
   ) => Promise<void>;
   logout: () => void;
   setCurrency: (currency: "USD" | "ARS") => Promise<void>;
+  /** Vuelve a leer el usuario (plan/estado) tras cambiar o cancelar la suscripción. */
+  refreshUser: () => Promise<void>;
 }
 
 const TOKEN_KEY = "finanzasp:token";
@@ -157,6 +159,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [token],
   );
 
+  const refreshUser = useCallback(async () => {
+    if (!token) return;
+    const res = await api<{ user: AuthUser }>("/auth/me", { token });
+    setUser(res.user);
+  }, [token]);
+
   const value = useMemo(
     () => ({
       user,
@@ -170,6 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       resetPassword,
       logout,
       setCurrency,
+      refreshUser,
     }),
     [
       user,
@@ -183,6 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       resetPassword,
       logout,
       setCurrency,
+      refreshUser,
     ],
   );
 

@@ -24,7 +24,7 @@ export function LandingFooter() {
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
               Organizá tus finanzas personales con claridad.
             </p>
-            <p className="text-xs text-zinc-400">Hecho en Argentina</p>
+            {/* <p className="text-xs text-zinc-400">Hecho en Argentina</p> */}
           </div>
 
           <div>
@@ -81,7 +81,7 @@ export function LandingFooter() {
         </div>
 
         <div className="border-t border-zinc-200 py-6 text-center text-xs text-zinc-400 dark:border-zinc-800">
-          © {new Date().getFullYear()} FinanzasP (Version 1.0) — Organizá tus finanzas
+          © {new Date().getFullYear()} FinanzasP (V 1.1) — Organizá tus finanzas
           personales.
         </div>
       </div>

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ApiError } from "@/lib/api";
 import { Check, Clock } from "lucide-react";
 import {
   checkoutHref,
@@ -82,6 +84,8 @@ function PlanCard({
   const router = useRouter();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  // Ya hay una suscripción vigente: el cambio de plan se hace desde Mi suscripción.
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
 
   const isFree = plan.id === "free";
   const price = plan.price[period];
@@ -100,11 +104,15 @@ function PlanCard({
     // Con sesión: checkout de Mercado Pago y redirección al init_point.
     if (checkoutLoading) return;
     setCheckoutError("");
+    setHasActiveSubscription(false);
     setCheckoutLoading(true);
     try {
       await startCheckout(PLAN_ID_TO_ENUM[plan.id], period, token);
       // Si la redirección a MP sale bien, esta página se abandona.
     } catch (err) {
+      setHasActiveSubscription(
+        err instanceof ApiError && err.code === "ACTIVE_SUBSCRIPTION_EXISTS",
+      );
       setCheckoutError(
         err instanceof Error ? err.message : "No se pudo iniciar el pago.",
       );
@@ -183,11 +191,23 @@ function PlanCard({
         >
           {checkoutLoading ? "Redirigiendo a Mercado Pago…" : plan.ctaLabel}
         </button>
-        {checkoutError && (
-          <p className="mt-2 text-center text-xs text-rose-500">
-            {checkoutError}
-          </p>
-        )}
+        {checkoutError &&
+          (hasActiveSubscription ? (
+            <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
+              Ya tenés una suscripción activa.{" "}
+              <Link
+                href="/configuraciones"
+                className="font-semibold text-emerald-600 underline underline-offset-2 dark:text-emerald-400"
+              >
+                Cambiá de plan desde Mi suscripción
+              </Link>
+              .
+            </p>
+          ) : (
+            <p className="mt-2 text-center text-xs text-rose-500">
+              {checkoutError}
+            </p>
+          ))}
       </div>
     </article>
   );

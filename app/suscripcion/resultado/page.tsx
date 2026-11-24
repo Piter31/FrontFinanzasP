@@ -37,6 +37,9 @@ export default function SuscripcionResultadoPage() {
     const poll = async () => {
       intentos.current += 1;
       try {
+        // /payments/me reconcilia contra MP: si el pago ya está autorizado
+        // y el webhook no llegó, el backend activa la suscripción ahí mismo.
+        await api("/payments/me", { token }).catch(() => undefined);
         const me = await api<SubscriptionSnapshot>("/subscription/me", {
           token,
         });

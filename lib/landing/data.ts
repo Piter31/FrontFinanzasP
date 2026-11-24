@@ -69,7 +69,7 @@ export const pricingPlans: PricingPlan[] = [
     name: "Básico",
     tagline: "Todo lo esencial para empezar a ordenar tus finanzas.",
     price: { monthly: 0, yearly: 0 },
-    trialDays: 10,
+    trialDays: 7,
     priceAfterTrial: { monthly: 2.9, yearly: 29 },
     ctaLabel: "Empezar gratis",
     features: [
@@ -160,7 +160,7 @@ export function checkoutHref(plan: PlanId, period: BillingPeriod): string {
  */
 export const launchOffer = {
   /** Fin de la oferta (lanzamiento 6 oct 2026 + 6 meses). */
-  endsAt: "2026-11-15T23:59:59-03:00",
+  endsAt: "2026-11-21T23:59:59-03:00",
   ctaHref: "/#planes",
 } as const;
 

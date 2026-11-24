@@ -4,6 +4,8 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
+    /** Código de error de negocio que envía la API (ej. ACTIVE_SUBSCRIPTION_EXISTS). */
+    public code?: string,
   ) {
     super(message);
     this.name = "ApiError";
@@ -41,12 +43,13 @@ export async function api<T>(
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as {
       message?: string | string[];
+      code?: string;
     } | null;
     const raw = body?.message;
     const message = Array.isArray(raw)
       ? raw.join(". ")
       : (raw ?? `Error ${res.status}`);
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, message, body?.code);
   }
 
   if (res.status === 204) return undefined as T;
