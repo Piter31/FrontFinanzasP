@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, LogOut, Pencil, Trash2, X } from "lucide-react";
 import { Card } from "@/components/card";
+import { SubscriptionCard } from "@/components/subscription-card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UpgradeCard } from "@/components/upgrade-card";
 import { useAuth } from "@/lib/auth-context";
@@ -126,6 +127,8 @@ export default function ConfiguracionesPage() {
           Personaliza tu experiencia en FinanzasP
         </p>
       </header>
+
+      <SubscriptionCard />
 
       <Card className="divide-y divide-zinc-200 dark:divide-zinc-800">
         <div className="flex items-center justify-between gap-4 p-5">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Hourglass, LogOut, Plus, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { CornerDownLeft, Crown, CrownIcon, Diamond, Gem, GemIcon, Hourglass, LogOut, Plus, Star, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { StatCard } from "@/components/stat-card";
 import { BudgetAlerts } from "@/components/budget-alerts";
 import { BarChart } from "@/components/bar-chart";
@@ -68,6 +68,7 @@ export default function DashboardPage() {
             <span className="text-sm text-zinc-500 dark:text-zinc-400">
                 de: {user?.name}
             </span>
+            <GemIcon className="size-4" />
           </div>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
             Resumen de tus finanzas personales

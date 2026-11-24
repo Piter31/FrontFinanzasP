@@ -20,7 +20,7 @@ import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 
 interface AdminStats {
-  // subscribedUsers: number;
+  subscribedUsers: number;
   totalUsers: number;
   activeUsers: number;
   totalTransactions: number;
@@ -45,13 +45,74 @@ interface AdminSuggestion {
   user: { email: string; name: string | null };
 }
 
-type Tab = "resumen" | "usuarios" | "sugerencias";
+interface PaymentEventRow {
+  id: string;
+  topic: string;
+  status: string | null;
+  amount: number | null;
+  processedAt: string;
+  payload?: { message?: string } | null;
+  user: { email: string } | null;
+}
+
+interface ReconciliationRun {
+  trigger: "cron" | "manual";
+  startedAt: string;
+  finishedAt: string;
+  checked: number;
+  fixed: number;
+  errors: number;
+  results: {
+    userId: string;
+    email: string;
+    changed?: boolean;
+    note?: string;
+    error?: string;
+  }[];
+}
+
+interface AdminPayments {
+  subscriptions: Partial<Record<string, number>>;
+  reconciliation: {
+    enabled: boolean;
+    running: boolean;
+    schedule: string;
+    last: {
+      processedAt: string;
+      status: string | null;
+      payload: ReconciliationRun | null;
+    } | null;
+  };
+  alerts: PaymentEventRow[];
+  events: PaymentEventRow[];
+}
+
+type Tab = "resumen" | "usuarios" | "pagos" | "sugerencias";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "resumen", label: "Resumen" },
   { id: "usuarios", label: "Usuarios" },
+  { id: "pagos", label: "Pagos" },
   { id: "sugerencias", label: "Sugerencias" },
 ];
+
+const STATUS_LABELS: Record<string, string> = {
+  TRIALING: "En prueba",
+  ACTIVE: "Activas",
+  PAST_DUE: "Pago rechazado",
+  CANCELED: "Canceladas",
+  EXPIRED: "Vencidas",
+};
+
+const ALERT_LABELS: Record<string, string> = {
+  webhook_signature_invalid: "Firma de webhook inválida",
+  webhook_error: "Error en webhook",
+  payment_rejected: "Cobro rechazado",
+  reconciliation_fix: "Corrección por reconciliación",
+  reconciliation_error: "Error de reconciliación",
+  duplicate_subscription: "Suscripción duplicada",
+  replace_cleanup_failed: "Baja de suscripción reemplazada fallida",
+};
 
 /** Un usuario se considera activo si su lastSeenAt está dentro de los últimos 15 minutos. */
 const ACTIVE_WINDOW_MS = 15 * 60 * 1000;
@@ -217,7 +278,7 @@ function ResumenTab({ token }: { token: string | null }) {
     },
     {
       label: "Usuarios suscriptos",
-      value: stats.unreadSuggestions, //cambiar por stats.subscribedUsers cuando se implemente la suscripción
+      value: stats.subscribedUsers,
       icon: Gem,
     },
   ];
@@ -292,6 +353,205 @@ function UsuariosTab({ token }: { token: string | null }) {
         </table>
       </div>
     </Card>
+  );
+}
+
+function formatTimestamp(iso: string): string {
+  return new Date(iso).toLocaleString("es-AR", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function PagosTab({ token }: { token: string | null }) {
+  const [reloadKey, setReloadKey] = useState(0);
+  const { data, loading, error } = useAdminData<AdminPayments>(
+    `/admin/payments?r=${reloadKey}`,
+    token,
+  );
+  const [running, setRunning] = useState(false);
+  const [runResult, setRunResult] = useState<ReconciliationRun | null>(null);
+  const [runError, setRunError] = useState<string | null>(null);
+
+  const reconcile = async () => {
+    if (!token || running) return;
+    setRunning(true);
+    setRunError(null);
+    try {
+      setRunResult(
+        await api<ReconciliationRun>("/admin/payments/reconcile", {
+          method: "POST",
+          token,
+        }),
+      );
+      setReloadKey((k) => k + 1);
+    } catch (err) {
+      setRunError(
+        err instanceof ApiError
+          ? err.message
+          : "No se pudo ejecutar la reconciliación.",
+      );
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  if (loading && !data) return <ListSkeleton />;
+  if (error || !data)
+    return (
+      <ErrorState message={error ?? "No se pudo cargar el estado de cobros."} />
+    );
+
+  const last = data.reconciliation.last;
+  const shown = runResult ?? last?.payload ?? null;
+  const flagged = shown?.results.filter((r) => r.changed || r.error) ?? [];
+
+  return (
+    <div className="space-y-4">
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+        {Object.entries(STATUS_LABELS).map(([status, label]) => (
+          <Card key={status} className="p-4">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">{label}</p>
+            <p className="mt-1 text-xl font-bold tabular-nums">
+              {data.subscriptions[status] ?? 0}
+            </p>
+          </Card>
+        ))}
+      </section>
+
+      <Card className="space-y-3 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium">
+              Reconciliación con Mercado Pago
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              {data.reconciliation.enabled
+                ? data.reconciliation.schedule
+                : "Job diario desactivado (MP_RECONCILIATION_ENABLED=false)"}
+              {" · "}
+              {last
+                ? `Última corrida: ${formatTimestamp(last.processedAt)}`
+                : "Todavía no corrió"}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void reconcile()}
+            disabled={running || data.reconciliation.running}
+            className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 disabled:cursor-wait disabled:opacity-60"
+          >
+            {running && <Loader2 className="size-4 animate-spin" />}
+            Reconciliar ahora
+          </button>
+        </div>
+        {runError && (
+          <p role="alert" className="text-xs text-rose-500">
+            {runError}
+          </p>
+        )}
+        {shown && (
+          <div className="space-y-2">
+            <p className="text-xs text-zinc-600 dark:text-zinc-300">
+              {shown.trigger === "manual" ? "Manual" : "Automática"}:{" "}
+              {shown.checked} revisados · {shown.fixed} corregidos ·{" "}
+              <span className={shown.errors ? "text-rose-500" : undefined}>
+                {shown.errors} con error
+              </span>
+            </p>
+            {flagged.length > 0 && (
+              <ul className="space-y-1 text-xs">
+                {flagged.map((r) => (
+                  <li
+                    key={r.userId}
+                    className={
+                      r.error
+                        ? "text-rose-500"
+                        : "text-amber-600 dark:text-amber-400"
+                    }
+                  >
+                    {r.email}: {r.error ?? r.note}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </Card>
+
+      <Card>
+        <p className="border-b border-zinc-200 px-5 py-3 text-sm font-medium dark:border-zinc-800">
+          Alertas recientes
+        </p>
+        {data.alerts.length === 0 ? (
+          <p className="px-5 py-6 text-center text-sm text-zinc-500">
+            Sin alertas. Todo en orden.
+          </p>
+        ) : (
+          <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
+            {data.alerts.map((a) => (
+              <li key={a.id} className="px-5 py-3">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">
+                    {ALERT_LABELS[a.status ?? ""] ?? a.status}
+                  </span>
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                    {formatTimestamp(a.processedAt)}
+                  </span>
+                  {a.user && (
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                      · {a.user.email}
+                    </span>
+                  )}
+                </div>
+                {a.payload?.message && (
+                  <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
+                    {a.payload.message}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+
+      <Card>
+        <p className="border-b border-zinc-200 px-5 py-3 text-sm font-medium dark:border-zinc-800">
+          Eventos de cobro recientes
+        </p>
+        {data.events.length === 0 ? (
+          <p className="px-5 py-6 text-center text-sm text-zinc-500">
+            Todavía no hay eventos de Mercado Pago.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-140 text-xs">
+              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                {data.events.map((e) => (
+                  <tr key={e.id}>
+                    <td className="px-5 py-2.5 text-zinc-400 dark:text-zinc-500">
+                      {formatTimestamp(e.processedAt)}
+                    </td>
+                    <td className="px-5 py-2.5 font-medium">{e.topic}</td>
+                    <td className="px-5 py-2.5">{e.status ?? "—"}</td>
+                    <td className="px-5 py-2.5 text-zinc-500 dark:text-zinc-400">
+                      {e.user?.email ?? "—"}
+                    </td>
+                    <td className="px-5 py-2.5 text-right tabular-nums">
+                      {e.amount != null
+                        ? `AR$ ${e.amount.toLocaleString("es-AR")}`
+                        : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+    </div>
   );
 }
 
@@ -466,6 +726,7 @@ export default function AdminPage() {
 
       {tab === "resumen" && <ResumenTab token={token} />}
       {tab === "usuarios" && <UsuariosTab token={token} />}
+      {tab === "pagos" && <PagosTab token={token} />}
       {tab === "sugerencias" && <SugerenciasTab token={token} />}
     </div>
   );
