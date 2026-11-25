@@ -70,7 +70,7 @@ export const pricingPlans: PricingPlan[] = [
     tagline: "Todo lo esencial para empezar a ordenar tus finanzas.",
     price: { monthly: 0, yearly: 0 },
     trialDays: 7,
-    priceAfterTrial: { monthly: 2.9, yearly: 29 },
+    priceAfterTrial: { monthly: 2.77, yearly: 27.7 },
     ctaLabel: "Empezar gratis",
     features: [
       { label: "Registro y acceso a tu cuenta", availability: "available" },
@@ -92,7 +92,7 @@ export const pricingPlans: PricingPlan[] = [
     tagline: "Más control, análisis y herramientas para mejorar tus finanzas.",
     badge: "MÁS ELEGIDO",
     highlighted: true,
-    price: { monthly: 4.99, yearly: 49.9 },
+    price: { monthly: 0.97, yearly: 49.7 },
     ctaLabel: "Elegir Plus",
     features: [
       { label: "Todo lo incluido en Básico", availability: "available" },
@@ -113,7 +113,7 @@ export const pricingPlans: PricingPlan[] = [
     name: "Pro",
     tagline:
       "Para quienes quieren llevar el control financiero al siguiente nivel.",
-    price: { monthly: 7.99, yearly: 79.9 },
+    price: { monthly: 7.80, yearly: 78 },
     ctaLabel: "Elegir Pro",
     features: [
       { label: "Todo lo incluido en Plus", availability: "available" },
