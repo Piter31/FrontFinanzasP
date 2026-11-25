@@ -56,6 +56,8 @@ export interface PricingPlan {
   /** Precio que aplica al terminar la prueba (solo plan free). */
   priceAfterTrial?: Record<BillingPeriod, number>;
   ctaLabel: string;
+  /** Plan todavía no disponible: el botón se muestra pero no hace nada. */
+  comingSoon?: boolean;
   features: PlanFeature[];
 }
 
@@ -92,7 +94,7 @@ export const pricingPlans: PricingPlan[] = [
     tagline: "Más control, análisis y herramientas para mejorar tus finanzas.",
     badge: "MÁS ELEGIDO",
     highlighted: true,
-    price: { monthly: 0.97, yearly: 9.70 },
+    price: { monthly: 4.97, yearly: 49.70 },
     ctaLabel: "Elegir Plus",
     features: [
       { label: "Todo lo incluido en Básico", availability: "available" },
@@ -113,8 +115,9 @@ export const pricingPlans: PricingPlan[] = [
     name: "Pro",
     tagline:
       "Para quienes quieren llevar el control financiero al siguiente nivel.",
-    price: { monthly: 7.80, yearly: 78 },
-    ctaLabel: "Elegir Pro",
+    price: { monthly: 9.87, yearly: 98.70 },
+    ctaLabel: "Elegir Pro (Muy pronto)",
+    comingSoon: true,
     features: [
       { label: "Todo lo incluido en Plus", availability: "available" },
       { label: "Reportes avanzados", availability: "coming-soon" },
@@ -160,7 +163,7 @@ export function checkoutHref(plan: PlanId, period: BillingPeriod): string {
  */
 export const launchOffer = {
   /** Fin de la oferta (lanzamiento 6 oct 2026 + 6 meses). */
-  endsAt: "2026-11-21T23:59:59-03:00",
+  endsAt: "2026-11-30T23:59:59-03:00",
   ctaHref: "/#planes",
 } as const;
 
