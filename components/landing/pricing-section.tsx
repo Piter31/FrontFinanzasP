@@ -96,6 +96,8 @@ function PlanCard({
       : "/año";
 
   const handleCta = async () => {
+    // Plan todavía no disponible: el botón no hace nada.
+    if (plan.comingSoon) return;
     // Sin sesión: primero se crea la cuenta (el trial arranca solo).
     if (!user || !token) {
       router.push(checkoutHref(plan.id, period));
@@ -183,8 +185,11 @@ function PlanCard({
           type="button"
           onClick={() => void handleCta()}
           disabled={checkoutLoading}
+          aria-disabled={plan.comingSoon || undefined}
           className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-60 ${
-            plan.highlighted
+            plan.comingSoon
+              ? "cursor-not-allowed border border-zinc-300 text-zinc-500 dark:border-zinc-700 dark:text-zinc-400"
+              : plan.highlighted
               ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 hover:bg-emerald-600"
               : "border border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800/60"
           }`}

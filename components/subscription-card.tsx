@@ -31,6 +31,14 @@ const PLAN_PRICES_USD = Object.fromEntries(
 
 const ALL_PLANS: Plan[] = ["FREE", "PLUS", "PRO"];
 
+/** Planes todavía no disponibles: el botón se ve pero no hace nada. */
+const COMING_SOON_PLANS = new Set(
+  pricingPlans.filter((p) => p.comingSoon).map((p) => p.id.toUpperCase() as Plan),
+);
+
+const COMING_SOON_CLASS =
+  "rounded-xl border border-zinc-300 px-3 py-2 text-xs font-semibold text-zinc-400 cursor-not-allowed dark:border-zinc-700 dark:text-zinc-500";
+
 function formatDate(iso: string | null | undefined): string {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("es-AR", {
@@ -236,20 +244,27 @@ export function SubscriptionCard() {
                 key={p}
                 type="button"
                 disabled={working}
+                aria-disabled={COMING_SOON_PLANS.has(p) || undefined}
                 onClick={() => {
+                  if (COMING_SOON_PLANS.has(p)) return;
                   setActionError("");
                   setNotice("");
                   setPending({ kind: "change", plan: p, period });
                 }}
-                className={planButtonClass(
-                  pending?.kind === "change" &&
-                    pending.plan === p &&
-                    pending.period === period,
-                )}
+                className={
+                  COMING_SOON_PLANS.has(p)
+                    ? COMING_SOON_CLASS
+                    : planButtonClass(
+                        pending?.kind === "change" &&
+                          pending.plan === p &&
+                          pending.period === period,
+                      )
+                }
               >
                 {PLAN_ORDER[p] > PLAN_ORDER[user.plan] ? "Subir a" : "Bajar a"}{" "}
                 {PLAN_LABELS[p]} · {formatPlanPrice(PLAN_PRICES_USD[p][period])}/
                 {periodLabel}
+                {COMING_SOON_PLANS.has(p) && " (Muy pronto)"}
               </button>
             ))}
           </div>
@@ -269,20 +284,27 @@ export function SubscriptionCard() {
                 key={p}
                 type="button"
                 disabled={working}
+                aria-disabled={COMING_SOON_PLANS.has(p) || undefined}
                 onClick={() => {
+                  if (COMING_SOON_PLANS.has(p)) return;
                   setActionError("");
                   setNotice("");
                   setPending({ kind: "change", plan: p, period: otherPeriod });
                 }}
-                className={planButtonClass(
-                  pending?.kind === "change" &&
-                    pending.plan === p &&
-                    pending.period === otherPeriod,
-                )}
+                className={
+                  COMING_SOON_PLANS.has(p)
+                    ? COMING_SOON_CLASS
+                    : planButtonClass(
+                        pending?.kind === "change" &&
+                          pending.plan === p &&
+                          pending.period === otherPeriod,
+                      )
+                }
               >
                 {PLAN_LABELS[p]} {otherPeriod === "yearly" ? "anual" : "mensual"} ·{" "}
                 {formatPlanPrice(PLAN_PRICES_USD[p][otherPeriod])}/
                 {PERIOD_UNIT[otherPeriod]}
+                {COMING_SOON_PLANS.has(p) && " (Muy pronto)"}
               </button>
             ))}
           </div>
