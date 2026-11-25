@@ -29,7 +29,7 @@ export default function LandingPage() {
           <BannerOfertaInline />
           <BenefitsSection />
           <RoadmapSection />
-          <Testimonials />
+          {/* <Testimonials /> */}
           <Faq />
           <BannerOfertaInline />
           <FinalCta />
