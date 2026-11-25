@@ -18,7 +18,7 @@ export type SubscriptionStatus =
 export const PLAN_ORDER: Record<Plan, number> = { FREE: 0, PLUS: 1, PRO: 2 };
 
 export const PLAN_LABELS: Record<Plan, string> = {
-  FREE: "Gratis",
+  FREE: "Básico",
   PLUS: "Plus",
   PRO: "Pro",
 };

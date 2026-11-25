@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Hourglass, Wallet } from "lucide-react";
-import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { AlertTriangle, Hourglass, Wallet } from "lucide-react";
+import { AuthProvider, useAuth, type AuthUser } from "@/lib/auth-context";
 import { effectiveStatus } from "@/lib/plans";
 import { TransactionsProvider } from "@/lib/transactions-context";
 import { TransactionModalProvider } from "@/components/transaction-modal";
@@ -27,20 +27,72 @@ function Splash() {
   );
 }
 
-/** Se muestra cuando el trial de 10 días o el período pago ya vencieron. */
-function SubscriptionExpired({ onLogout }: { onLogout: () => void }) {
+function formatDate(iso: string | null): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("es-AR", {
+    day: "numeric",
+    month: "long",
+  });
+}
+
+/**
+ * Aviso fijo en la app para estados que requieren atención pero todavía
+ * dan acceso: cobro rechazado (MP reintenta) o suscripción cancelada.
+ */
+function SubscriptionBanner({ user }: { user: AuthUser }) {
+  const status = effectiveStatus(user);
+  if (status !== "PAST_DUE" && status !== "CANCELED") return null;
+  const until = formatDate(user.currentPeriodEnd);
+  return (
+    <div className="flex items-center gap-2 border-b border-amber-500/20 bg-amber-500/10 px-4 py-2 text-xs text-amber-700 dark:text-amber-400">
+      <AlertTriangle className="size-4 shrink-0" />
+      <p className="min-w-0 flex-1">
+        {status === "PAST_DUE"
+          ? `No pudimos cobrar tu suscripción. Mercado Pago lo reintenta; revisá tu medio de pago${until ? ` (acceso hasta el ${until})` : ""}.`
+          : `Cancelaste tu suscripción: tenés acceso${until ? ` hasta el ${until}` : " hasta el fin del período pago"}.`}
+      </p>
+      <Link
+        href="/configuraciones"
+        className="shrink-0 font-semibold underline underline-offset-2"
+      >
+        {status === "PAST_DUE" ? "Ver detalle" : "Volver a suscribirme"}
+      </Link>
+    </div>
+  );
+}
+
+/** Se muestra cuando el trial o el período pago ya vencieron. */
+function SubscriptionExpired({
+  user,
+  onLogout,
+}: {
+  user: AuthUser;
+  onLogout: () => void;
+}) {
+  const copy =
+    user.subscriptionStatus === "TRIALING"
+      ? {
+          title: "Tu período de prueba terminó",
+          body: "Los días gratis llegaron a su fin. Elegí un plan para seguir usando FinanzasP: el plan Básico continúa por US$2,90/mes.",
+        }
+      : user.subscriptionStatus === "PAST_DUE"
+        ? {
+            title: "No pudimos cobrar tu suscripción",
+            body: "Mercado Pago no logró acreditar el pago después de varios intentos. Suscribite de nuevo con otro medio de pago para recuperar el acceso: tus datos siguen guardados.",
+          }
+        : {
+            title: "Tu suscripción terminó",
+            body: "El período pago llegó a su fin. Elegí un plan para seguir usando FinanzasP: tus datos siguen guardados.",
+          };
   return (
     <div className="grid min-h-screen place-items-center p-4">
       <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
         <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-amber-500/15 text-amber-500">
           <Hourglass className="size-6" />
         </span>
-        <h1 className="mt-4 text-xl font-bold tracking-tight">
-          Tu período de prueba terminó
-        </h1>
+        <h1 className="mt-4 text-xl font-bold tracking-tight">{copy.title}</h1>
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-          Los 10 días gratis llegaron a su fin. Elegí un plan para seguir
-          usando FinanzasP: el plan Gratis continúa por US$3,79/mes.
+          {copy.body}
         </p>
         <Link
           href="/#planes"
@@ -86,8 +138,14 @@ function Shell({ children }: { children: React.ReactNode }) {
   if (pathname === "/") return <>{children}</>;
 
   // Suscripción vencida → pantalla de renovación (el rol ADMIN nunca se bloquea).
-  if (user.role !== "ADMIN" && effectiveStatus(user) === "EXPIRED") {
-    return <SubscriptionExpired onLogout={logout} />;
+  // Excepción: /suscripcion/resultado debe ser visible porque es la vuelta
+  // del checkout de Mercado Pago (justo lo que reactiva la suscripción).
+  if (
+    user.role !== "ADMIN" &&
+    effectiveStatus(user) === "EXPIRED" &&
+    pathname !== "/suscripcion/resultado"
+  ) {
+    return <SubscriptionExpired user={user} onLogout={logout} />;
   }
 
   return (
@@ -106,6 +164,7 @@ function Shell({ children }: { children: React.ReactNode }) {
               </Link>
               <ThemeToggle />
             </header>
+            {user.role !== "ADMIN" && <SubscriptionBanner user={user} />}
             <main className="pb-24 md:pb-0">{children}</main>
           </div>
         </div>

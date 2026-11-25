@@ -91,7 +91,7 @@ export function DashboardMock({ compact = false }: { compact?: boolean }) {
         <div className="flex min-w-0 flex-1 justify-center">
           <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1 text-[11px] text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
             <Lock className="size-3 shrink-0" />
-            <span className="truncate">finanzasp.com/dashboard</span>
+            <span className="truncate">finanzasp.online/dashboard</span>
           </span>
         </div>
         <div className="w-10 shrink-0" aria-hidden />
