@@ -92,7 +92,7 @@ export const pricingPlans: PricingPlan[] = [
     tagline: "Más control, análisis y herramientas para mejorar tus finanzas.",
     badge: "MÁS ELEGIDO",
     highlighted: true,
-    price: { monthly: 0.97, yearly: 49.7 },
+    price: { monthly: 0.97, yearly: 9.70 },
     ctaLabel: "Elegir Plus",
     features: [
       { label: "Todo lo incluido en Básico", availability: "available" },
